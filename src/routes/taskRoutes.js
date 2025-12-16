@@ -4,6 +4,7 @@ import {
   getAllTasks,
   getTaskById,
   updateTask,
+  updateTaskStatus,
   deleteTask
 } from "../controllers/taskController.js";
 
@@ -17,7 +18,8 @@ router.use(authMiddleware);
 router.post("/", createTask); //
 router.get("/", authMiddleware, getAllTasks); //
 router.get("/:id", checkTaskOwner, getTaskById); //
-router.put("/:id", checkTaskOwner, updateTask); //
+router.patch("/:id", checkTaskOwner, updateTask); //
+router.patch("/:id/status", checkTaskOwner, updateTaskStatus);
 router.delete("/:id", checkTaskOwner, deleteTask); //
 
 export default router;

@@ -3,8 +3,9 @@ import jwt from "jsonwebtoken";
 import db from "../models/index.js";
 import config from "../config/config.js";
 import { tokenBlacklist } from "../utils/tokenBlacklist.js";
+import { markOverdueTasks } from "../utils/markOverdueTasks.js";
 
-const { User, UserInfo } = db;
+const { User, Task } = db;
 
 const signAccessToken = (user) =>
   jwt.sign(
@@ -47,7 +48,7 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    
     const user = await User.findOne({ where: { email } });
     if (!user)
       return res.status(400).json({ message: "Invalid email" });
@@ -55,6 +56,8 @@ export const login = async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid)
       return res.status(400).json({ message: "Invalid password" });
+
+    await markOverdueTasks(user.id);
 
     const accessToken = signAccessToken(user);
     const refreshToken = signRefreshToken(user);
@@ -64,7 +67,8 @@ export const login = async (req, res) => {
     res.json({
       message: "Login successful",
       accessToken,
-      refreshToken
+      refreshToken,
+      user_id: user.id
     });
 
   } catch (err) {

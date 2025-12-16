@@ -6,10 +6,14 @@ import authRoutes from "./authRoutes.js";
 import userRoutes from "./userRoutes.js";
 import taskRoutes from "./taskRoutes.js";
 import adminRoutes from "./adminRoutes.js";
+import cors from 'cors';
+
 
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cors());
+
 
 /* ------------------ ROUTE MOUNTING ------------------ */
 

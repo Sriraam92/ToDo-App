@@ -7,7 +7,7 @@ export default {
   REFRESH_SECRET: process.env.REFRESH_SECRET || "myrefreshsecret456",
 
   // Token Expirations
-  ACCESS_EXPIRES_IN: "15m",   // short-lived access token
+  ACCESS_EXPIRES_IN: "50m",   // short-lived access token
   REFRESH_EXPIRES_IN: "7d",   // long-lived refresh token
 
   "development": {

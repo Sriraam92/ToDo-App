@@ -23,17 +23,21 @@ const signRefreshToken = (user) =>
 
 export const signup = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { newname, newemail, newpassword } = req.body;
 
-    const exists = await User.findOne({ where: { email } });
+    if (!newemail){
+      return res.status(400).json({ message: "Enter Valid Email"});
+    }
+
+    const exists = await User.findOne({ where: { email: newemail } });
     if (exists)
       return res.status(400).json({ message: "Email already registered" });
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(newpassword, 10);
 
     const user = await User.create({
-      name,
-      email,
+      name: newname,
+      email: newemail,
       password: passwordHash,
       refreshToken: null
     });
@@ -49,7 +53,7 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email: email } });
     if (!user)
       return res.status(400).json({ message: "Invalid email" });
 
@@ -68,7 +72,8 @@ export const login = async (req, res) => {
       message: "Login successful",
       accessToken,
       refreshToken,
-      user_id: user.id
+      user_id: user.id,
+      user_role: user.role
     });
 
   } catch (err) {

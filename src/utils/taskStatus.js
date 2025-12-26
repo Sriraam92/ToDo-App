@@ -4,8 +4,9 @@ export const calculateStatusFromDueDate = (due_at) => {
   const today = new Date();
   const dueDate = new Date(due_at);
 
+  // // Normalize time (important!)
   today.setHours(0, 0, 0, 0);
   dueDate.setHours(0, 0, 0, 0);
 
-  return dueDate < today ? "overdue" : "pending";
+  return dueDate >= today ? "pending" : "overdue";
 };

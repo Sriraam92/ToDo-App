@@ -4,25 +4,37 @@ const { Task } = db;
 
 export const createTask = async (req, res) => {
   try {
-    const data = {
-      ...req.body,
-      user_id: req.user.id,
-      status: req.body.status || "pending"
-    };
+    const { title, description, due_at, priority } = req.body;
 
-    const task = await Task.create(data);
+    if (!title) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const status = calculateStatusFromDueDate(due_at);
+
+    const task = await Task.create({
+      title,
+      description,
+      due_at,
+      priority,
+      status,
+      user_id: req.user.id,
+    });
     res.json(task);
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
 
+
 export const getAllTasks = async (req, res) => {
   try {
       const userId = req.user.id;
-      const { page = 1, limit = 10, sortBy = "id", order = "ASC", priority, status, search } = req.query;
+      const { page = 1, limit = 15, sortBy = "id", order = "ASC", priority, status, search } = req.query;
 
+      console.log("Page and Limit",page,limit);
       const offset = (page - 1) * limit;
 
       const where = { user_id: userId};
@@ -97,7 +109,7 @@ export const updateTask = async (req, res) => {
     if (task.status !== "completed") {
       task.status = calculateStatusFromDueDate(task.due_at);
     }
-
+    
     await task.save();
 
     return res.json({ message: "Task updated" });

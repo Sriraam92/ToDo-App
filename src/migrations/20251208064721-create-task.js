@@ -19,6 +19,7 @@ export const up = async (queryInterface, Sequelize) => {
 
     title: {
       type: Sequelize.STRING,
+      allowNull: false
     },
 
     description: {
